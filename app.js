@@ -103,13 +103,57 @@ function navToggle(e) {
   }
 }
 //Barba Page Transitions
+const logo = document.querySelector("#logo");
 barba.init({
   views: [
     {
-      namespace: "home"
+      namespace: "home",
+      beforeEnter() {
+        animateSlides();
+        logo.href = "./index.html";
+      },
+      beforeLeave() {
+        slideScene.destroy();
+        pageScene.destroy();
+        controller.destroy();
+      }
     },
     {
-      namespace: "fashion"
+      namespace: "fashion",
+      beforeEnter() {
+        logo.href = "../index.html";
+      }
+    }
+  ],
+  transitions: [
+    {
+      leave({ current, next }) {
+        let done = this.async();
+        //An Animation
+        const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+        tl.fromTo(current.container, 1, { opacity: 1, opacity: 0 });
+        tl.fromTo(
+          ".swipe",
+          0.75,
+          { x: "-100%" },
+          { x: "0%", onComplete: done },
+          "-=0.5"
+        );
+      },
+      enter({ current, next }) {
+        let done = this.async();
+        //Scroll to the top
+        window.scrollTo(0, 0);
+        //An Animation
+        const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+        tl.fromTo(
+          ".swipe",
+          1,
+          { x: "0%" },
+          { x: "100%", stagger: 0.5, onComplete: done }
+        );
+        tl.fromTo(next.container, 1, { opacity: 0 }, { opacity: 1 });
+      }
     }
   ]
 });
